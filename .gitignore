@@ -1,0 +1,10 @@
+data.db
+test.db
+
+__pycache__/**
+**/__pycache__
+
+.env.*
+!.env.example
+
+tmp/**
