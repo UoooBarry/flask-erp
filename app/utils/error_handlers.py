@@ -1,6 +1,7 @@
 import logging
 from sqlalchemy.exc import IntegrityError, StatementError
 from flask import jsonify
+from pydantic import ValidationError as PydanticValidationError
 from app.utils.exceptions import (
     APIError,
     ValidationError,
@@ -18,6 +19,10 @@ def register_error_handlers(app):
     @app.errorhandler(APIError)
     def handle_api_error(error):
         return render_error(error.message, error.status_code, error.to_dict())
+
+    @app.errorhandler(PydanticValidationError)
+    def handle_pydantic_validation_error(error):
+        return render_error(error.errors()[0]['msg'], 422)
 
     @app.errorhandler(IntegrityError)
     def handle_integrity_error(error):

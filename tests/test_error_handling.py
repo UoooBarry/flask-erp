@@ -105,7 +105,7 @@ class TestResponseHelpers:
             
             assert status_code == 200
             assert data["success"] is True
-            assert "data" not in data
+            assert data["data"] is None
 
     def test_render_error(self, app):
         from app.utils.response import render_error

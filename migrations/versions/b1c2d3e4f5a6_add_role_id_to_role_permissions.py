@@ -17,14 +17,16 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('role_permissions', sa.Column('role_id', sa.Integer(), nullable=False))
-    op.create_foreign_key('fk_role_permissions_role_id', 'role_permissions', 'roles', ['role_id'], ['id'])
-    op.drop_index('ix_role_permissions_lookup', table_name='role_permissions')
-    op.create_index('ix_role_permissions_lookup', 'role_permissions', ['role_id', 'blueprint', 'endpoint', 'method'])
+    with op.batch_alter_table('role_permissions', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('role_id', sa.Integer(), nullable=False))
+        batch_op.create_foreign_key('fk_role_permissions_role_id', 'roles', ['role_id'], ['id'])
+        batch_op.drop_index('ix_role_permissions_lookup')
+        batch_op.create_index('ix_role_permissions_lookup', ['role_id', 'blueprint', 'endpoint', 'method'])
 
 
 def downgrade():
-    op.drop_index('ix_role_permissions_lookup', table_name='role_permissions')
-    op.create_index('ix_role_permissions_lookup', 'role_permissions', ['blueprint', 'endpoint', 'method'])
-    op.drop_constraint('fk_role_permissions_role_id', 'role_permissions', type_='foreignkey')
-    op.drop_column('role_permissions', 'role_id')
+    with op.batch_alter_table('role_permissions', schema=None) as batch_op:
+        batch_op.drop_index('ix_role_permissions_lookup')
+        batch_op.create_index('ix_role_permissions_lookup', ['blueprint', 'endpoint', 'method'])
+        batch_op.drop_constraint('fk_role_permissions_role_id', type_='foreignkey')
+        batch_op.drop_column('role_id')
